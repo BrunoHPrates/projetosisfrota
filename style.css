@@ -1,0 +1,109 @@
+/* style.css */
+:root {
+    /* MODO CLARO */
+    --bg-color: #f4f4f9;
+    --text-color: #121212;
+    --glass-bg: rgba(255, 255, 255, 0.4);
+    --glass-border: rgba(255, 255, 255, 0.6);
+    --accent-orange: #ff6b00;
+    --shape-color: rgba(0, 0, 0, 0.2); /* Círculo escuro no modo claro */
+    --table-text: #121212;
+}
+
+[data-theme="dark"] {
+    /* MODO ESCURO */
+    --bg-color: #0f0f13;
+    --text-color: #ffffff;
+    --glass-bg: rgba(20, 25, 35, 0.4);
+    --glass-border: rgba(255, 255, 255, 0.1);
+    --accent-orange: #ff8c00;
+    --shape-color: rgba(255, 255, 255, 0.8); /* Círculo branco no modo escuro */
+    --table-text: #ffffff;
+}
+
+body {
+    background-color: var(--bg-color);
+    color: var(--text-color);
+    transition: background-color 0.4s ease, color 0.4s ease;
+    min-height: 100vh;
+    margin: 0;
+    overflow-x: hidden;
+    position: relative;
+    z-index: 0;
+}
+
+/* FORMAS GEOMÉTRICAS DE FUNDO (Igual à imagem) */
+.bg-shapes {
+    position: fixed;
+    top: 0; left: 0; width: 100vw; height: 100vh;
+    z-index: -1;
+    overflow: hidden;
+    pointer-events: none;
+}
+
+/* Anel Laranja */
+.shape-ring-orange {
+    position: absolute;
+    width: 350px; height: 350px;
+    border: 45px solid var(--accent-orange);
+    border-radius: 50%;
+    bottom: -50px; right: 5%;
+    filter: drop-shadow(0 0 15px rgba(255, 107, 0, 0.3));
+    transition: all 0.4s ease;
+}
+
+/* Anel Branco/Preto (Desfocado) */
+.shape-ring-bw {
+    position: absolute;
+    width: 250px; height: 250px;
+    border: 35px solid var(--shape-color);
+    border-radius: 50%;
+    top: 10%; left: 10%;
+    filter: blur(6px);
+    transition: all 0.4s ease;
+}
+
+/* Brilho Laranja no centro */
+.shape-glow {
+    position: absolute;
+    width: 400px; height: 400px;
+    background: radial-gradient(circle, var(--accent-orange) 0%, transparent 60%);
+    top: 30%; left: 35%;
+    opacity: 0.15;
+    filter: blur(50px);
+}
+
+/* EFEITO GLASSMORPHISM (O Cartão de Vidro) */
+.glass-effect {
+    background: var(--glass-bg);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border: 1px solid var(--glass-border);
+    border-radius: 20px;
+    box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.2);
+    color: var(--text-color);
+}
+
+/* Botões Laranjas */
+.btn-orange {
+    background-color: var(--accent-orange);
+    color: #fff;
+    border: none;
+    font-weight: bold;
+    transition: all 0.3s ease;
+}
+.btn-orange:hover {
+    background-color: #e65c00;
+    color: #fff;
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(255, 107, 0, 0.4);
+}
+
+/* Correções de Tabela e Formulário para o Vidro */
+table { color: var(--table-text) !important; }
+th, td { background-color: transparent !important; color: inherit !important; border-bottom: 1px solid var(--glass-border) !important;}
+.modal-content { background: transparent; border: none; }
+.modal-content > div { border-radius: 20px; }
+.navbar-glass { border-bottom: 1px solid var(--glass-border); background: var(--glass-bg); backdrop-filter: blur(10px); }
+.form-control, .form-select { background-color: rgba(255,255,255,0.7); color: #000; }
+[data-theme="dark"] .form-control, [data-theme="dark"] .form-select { background-color: rgba(0,0,0,0.5); color: #fff; border: 1px solid rgba(255,255,255,0.2); }
