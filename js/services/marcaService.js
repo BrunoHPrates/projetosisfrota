@@ -1,8 +1,4 @@
-<<<<<<< HEAD
 const URL = "https://x8ki-letl-twmt.n7.xano.io/api:RVfx6S4N/marca";
-=======
-const URL = "https://x8ki-letl-twmt.n7.xano.io/api:ijUECDHD/marca";
->>>>>>> 4164a8fa02f74748850aa5378fb3797b75f9dcd9
 export const marcaService = {
     listar: () => fetch(URL).then(r => r.json()),
     cadastrar: (d) => fetch(URL, { method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify(d) }),

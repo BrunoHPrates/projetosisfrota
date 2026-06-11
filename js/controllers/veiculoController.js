@@ -2,7 +2,7 @@ import { veiculoService } from '../services/veiculoService.js';
 import { marcaService } from '../services/marcaService.js';
 import { modeloService } from '../services/modeloService.js';
 
-const tabela = document.querySelector('#tabela'); // No HTML está id="tabela"
+const tabela = document.querySelector('#tabela');
 const form = document.querySelector('#formVeiculo');
 const selMarca = document.querySelector('#selMarca');
 const selModelo = document.querySelector('#selModelo');
@@ -15,88 +15,79 @@ async function carregarDropdowns() {
             modeloService.listar()
         ]);
 
-        // Preenche o Select de Marcas
-        selMarca.innerHTML = '<option value="" disabled selected>Selecione uma Marca</option>' + 
-            marcas.map(m => `<option value="${m.id}">${m.nome || m.Nome}</option>`).join('');
+        selMarca.innerHTML = '<option value="" disabled selected>Selecione uma Marca</option>' +
+            (marcas || []).map(m => `<option value="${m.id ?? m.ID ?? m.Id}">${m.nome ?? m.Nome ?? ''}</option>`).join('');
 
-        // Preenche o Select de Modelos
-        selModelo.innerHTML = '<option value="" disabled selected>Selecione um Modelo</option>' + 
-            modelos.map(m => `<option value="${m.id}">${m.nome || m.Nome}</option>`).join('');
+        selModelo.innerHTML = '<option value="" disabled selected>Selecione um Modelo</option>' +
+            (modelos || []).map(m => `<option value="${m.id ?? m.ID ?? m.Id}">${m.nome ?? m.Nome ?? ''}</option>`).join('');
     } catch (erro) {
-        console.error("Erro ao carregar dados dos seletores:", erro);
+        console.error('Erro ao carregar dados dos seletores:', erro);
     }
 }
 
 async function atualizarTela() {
-    tabela.innerHTML = ""; 
-    const lista = await veiculoService.listar();
+    tabela.innerHTML = "";
+    try {
+        const lista = await veiculoService.listar();
+        (lista || []).forEach(v => {
+            const descricao = v.descricao ?? v.Descricao ?? 'Sem descrição';
+            const ano = v.ano ?? v.Ano ?? '-';
+            const horimetro = v.horimetro ?? v.Horimetro ?? '-';
+            const id = v.id ?? v.ID ?? v.Id ?? '';
 
-    lista.forEach(v => {
-        const linha = document.createElement('tr');
-        // Tratando possíveis variações de maiúsculas/minúsculas vindas do banco
-<<<<<<< HEAD
-        const descricao = v.descricao || v.Descricao || "Sem descrição";
-        const ano = v.Ano || v.ano || "-";
-        const horimetro = v.horimetro ?? v.Horimetro ?? "-";
-=======
-        const descricao = v.Descricao || v.descricao || "Sem descrição";
-        const ano = v.Ano || v.ano || "-";
->>>>>>> 4164a8fa02f74748850aa5378fb3797b75f9dcd9
-        
-        linha.innerHTML = `
-            <td>${descricao}</td>
-            <td>${ano}</td>
-<<<<<<< HEAD
-            <td>${horimetro}</td>
-=======
->>>>>>> 4164a8fa02f74748850aa5378fb3797b75f9dcd9
-            <td>
-                <button class="btn btn-danger btn-sm" data-id="${v.id}">Excluir</button>
-            </td>
-        `;
-        tabela.appendChild(linha);
-    });
+            const linha = document.createElement('tr');
+            linha.innerHTML = `
+                <td>${descricao}</td>
+                <td>${ano}</td>
+                <td>${horimetro}</td>
+                <td>
+                    <button class="btn btn-danger btn-sm" data-id="${id}">Excluir</button>
+                </td>
+            `;
+            tabela.appendChild(linha);
+        });
+    } catch (erro) {
+        console.error('Erro ao listar veículos:', erro);
+    }
 }
 
 form.addEventListener('submit', async (e) => {
     e.preventDefault();
-    
-    // IDs dos seletores ajustados exatamente como estão no seu HTML (descV, anoV, horiV, etc)
-    const id = document.querySelector('#idV').value;
-    const objetoVeiculo = {
-<<<<<<< HEAD
-        descricao: document.querySelector('#descV').value.trim(),
-        Ano: parseInt(document.querySelector('#anoV').value, 10),
-        horimetro: parseInt(document.querySelector('#horiV').value, 10),
-        marcaId: parseInt(selMarca.value, 10),
-        modeloId: parseInt(selModelo.value, 10)
-=======
-        Descricao: document.querySelector('#descV').value,
-        Ano: parseInt(document.querySelector('#anoV').value),
-        Horimetro: parseInt(document.querySelector('#horiV').value),
-        MarcaId: parseInt(selMarca.value),
-        ModeloId: parseInt(selModelo.value)
->>>>>>> 4164a8fa02f74748850aa5378fb3797b75f9dcd9
-    };
+    try {
+        const id = document.querySelector('#idV').value;
+        const objetoVeiculo = {
+            descricao: document.querySelector('#descV').value.trim(),
+            ano: parseInt(document.querySelector('#anoV').value, 10) || null,
+            horimetro: parseInt(document.querySelector('#horiV').value, 10) || 0,
+            marcaId: parseInt(selMarca.value, 10) || null,
+            modeloId: parseInt(selModelo.value, 10) || null
+        };
 
-    if (id) {
-        await veiculoService.atualizar(id, objetoVeiculo);
-    } else {
-        await veiculoService.cadastrar(objetoVeiculo);
+        if (id) {
+            await veiculoService.atualizar(id, objetoVeiculo);
+        } else {
+            await veiculoService.cadastrar(objetoVeiculo);
+        }
+
+        form.reset();
+        document.querySelector('#idV').value = "";
+        modalBS.hide();
+        atualizarTela();
+    } catch (erro) {
+        console.error('Erro ao salvar veículo:', erro);
     }
-
-    form.reset();
-    document.querySelector('#idV').value = ""; // Limpa o ID oculto
-    modalBS.hide(); // Fecha o modal após salvar
-    atualizarTela();
 });
 
 tabela.addEventListener('click', async (e) => {
     if (e.target.classList.contains('btn-danger')) {
         const id = e.target.getAttribute('data-id');
-        if (confirm("Deseja apagar este veículo?")) {
-            await veiculoService.excluir(id);
-            atualizarTela();
+        if (confirm('Deseja apagar este veículo?')) {
+            try {
+                await veiculoService.excluir(id);
+                atualizarTela();
+            } catch (erro) {
+                console.error('Erro ao excluir veículo:', erro);
+            }
         }
     }
 });
